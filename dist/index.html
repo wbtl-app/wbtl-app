@@ -17,10 +17,13 @@
       --card-bg: #ffffff;
       --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+      --card-glow-hover: 0 0 20px rgba(0, 0, 0, 0.1);
+      --toggle-bg: #e5e5e5;
+      --toggle-knob: #ffffff;
     }
 
     @media (prefers-color-scheme: dark) {
-      :root {
+      :root:not([data-theme="light"]) {
         --bg: #000000;
         --bg-secondary: #1c1c1e;
         --text: #f5f5f7;
@@ -31,7 +34,42 @@
         --card-bg: #1c1c1e;
         --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
         --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.5);
+        --card-glow-hover: 0 0 24px rgba(255, 255, 255, 0.3);
+        --toggle-bg: #3a3a3c;
+        --toggle-knob: #ffffff;
       }
+    }
+
+    [data-theme="dark"] {
+      --bg: #000000;
+      --bg-secondary: #1c1c1e;
+      --text: #f5f5f7;
+      --text-secondary: #98989d;
+      --accent: #2997ff;
+      --accent-hover: #40a9ff;
+      --border: #38383a;
+      --card-bg: #1c1c1e;
+      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.5);
+      --card-glow-hover: 0 0 24px rgba(255, 255, 255, 0.3);
+      --toggle-bg: #3a3a3c;
+      --toggle-knob: #ffffff;
+    }
+
+    [data-theme="light"] {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --border: #d2d2d7;
+      --card-bg: #ffffff;
+      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+      --card-glow-hover: 0 0 20px rgba(0, 0, 0, 0.1);
+      --toggle-bg: #e5e5e5;
+      --toggle-knob: #ffffff;
     }
 
     * {
@@ -51,6 +89,7 @@
     }
 
     header {
+      position: relative;
       text-align: center;
       padding: 4rem 1.5rem 3rem;
       background: var(--bg-secondary);
@@ -103,13 +142,6 @@
       width: 100%;
     }
 
-    h2 {
-      font-size: 1.5rem;
-      font-weight: 600;
-      margin-bottom: 1.5rem;
-      color: var(--text);
-    }
-
     .tools-grid {
       display: grid;
       gap: 1.5rem;
@@ -123,13 +155,12 @@
       text-decoration: none;
       color: inherit;
       display: block;
-      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      transition: box-shadow 0.2s ease;
       box-shadow: var(--card-shadow);
     }
 
     .tool-card:hover {
-      box-shadow: var(--card-shadow-hover);
-      transform: translateY(-2px);
+      box-shadow: var(--card-shadow-hover), var(--card-glow-hover);
     }
 
     .tool-header {
@@ -241,6 +272,58 @@
       text-decoration: underline;
     }
 
+    /* Theme Toggle */
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .theme-toggle svg {
+      width: 16px;
+      height: 16px;
+      stroke: var(--text-secondary);
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--toggle-bg);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: var(--toggle-knob);
+      border-radius: 50%;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+    }
+
+    [data-theme="dark"] .toggle-switch::after,
+    :root:not([data-theme="light"]) .toggle-switch::after {
+      transform: translateX(20px);
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root:not([data-theme="dark"]) .toggle-switch::after {
+        transform: translateX(0);
+      }
+    }
+
     @media (min-width: 640px) {
       .tools-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -256,6 +339,16 @@
 </head>
 <body>
   <header>
+    <div class="theme-toggle">
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/>
+        <path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>
+      </svg>
+      <div class="toggle-switch" onclick="toggleTheme()" role="button" tabindex="0" aria-label="Toggle dark mode"></div>
+      <svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </div>
     <div class="logo">wbtl<span>.app</span></div>
     <p class="tagline">A collection of useful tools that run entirely in your browser. No server needed, no tracking, no ads.</p>
     <div class="badges">
@@ -275,7 +368,6 @@
   </header>
 
   <main>
-    <h2>Tools</h2>
     <div class="tools-grid">
 
       <!-- Tool: Timer -->
@@ -330,5 +422,60 @@
     </div>
     <p class="copyright">Made with <span title="love">❤️</span> in <span title="Switzerland" style="display:inline-block;vertical-align:-0.1em;margin:0 0.25em;line-height:0;"><svg width="14" height="14" viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" style="display:block;"><rect width="32" height="32" fill="#D52B1E"/><path d="M13 6h6v20h-6zM6 13h20v6H6z" fill="#fff"/></svg></span> by <a href="https://christianriesen.com">humans</a> and some help from <span title="robots">🤖</span></p>
   </footer>
+
+  <script>
+    function getSystemTheme() {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    function getStoredTheme() {
+      return localStorage.getItem('wbtl-theme');
+    }
+
+    function setTheme(theme) {
+      if (theme === 'system') {
+        document.documentElement.removeAttribute('data-theme');
+        localStorage.removeItem('wbtl-theme');
+      } else {
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('wbtl-theme', theme);
+      }
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const system = getSystemTheme();
+
+      if (!current) {
+        // Currently using system, switch to opposite
+        setTheme(system === 'dark' ? 'light' : 'dark');
+      } else {
+        // Currently using manual, check if it matches system
+        if (current === system) {
+          // Matches system, switch to opposite
+          setTheme(current === 'dark' ? 'light' : 'dark');
+        } else {
+          // Doesn't match system, go back to system
+          setTheme('system');
+        }
+      }
+    }
+
+    // Initialize theme from storage
+    (function() {
+      const stored = getStoredTheme();
+      if (stored) {
+        setTheme(stored);
+      }
+    })();
+
+    // Handle keyboard for toggle
+    document.querySelector('.toggle-switch').addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        toggleTheme();
+      }
+    });
+  </script>
 </body>
 </html>
