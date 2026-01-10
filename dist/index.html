@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>wbtl.app - Useful Tools That Run Locally</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-secondary: #f5f5f7;
+      --text: #1d1d1f;
+      --text-secondary: #6e6e73;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --border: #d2d2d7;
+      --card-bg: #ffffff;
+      --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.12);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #000000;
+        --bg-secondary: #1c1c1e;
+        --text: #f5f5f7;
+        --text-secondary: #98989d;
+        --accent: #2997ff;
+        --accent-hover: #40a9ff;
+        --border: #38383a;
+        --card-bg: #1c1c1e;
+        --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+        --card-shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.5);
+      }
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      text-align: center;
+      padding: 4rem 1.5rem 3rem;
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .logo span {
+      color: var(--accent);
+    }
+
+    .tagline {
+      font-size: 1.25rem;
+      color: var(--text-secondary);
+      max-width: 500px;
+      margin: 0 auto;
+    }
+
+    .badges {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.4rem 0.8rem;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 3rem 1.5rem;
+      width: 100%;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin-bottom: 1.5rem;
+      color: var(--text);
+    }
+
+    .tools-grid {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .tool-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+      transition: box-shadow 0.2s ease, transform 0.2s ease;
+      box-shadow: var(--card-shadow);
+    }
+
+    .tool-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      transform: translateY(-2px);
+    }
+
+    .tool-header {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .tool-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .tool-icon.timer {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a5a);
+    }
+
+    .tool-icon.soundcheck {
+      background: linear-gradient(135deg, #4ecdc4, #44a3a0);
+    }
+
+    .tool-name {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .tool-url {
+      font-size: 0.85rem;
+      color: var(--accent);
+      margin-top: 0.15rem;
+    }
+
+    .tool-description {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+    }
+
+    footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 2.5rem 1.5rem;
+      text-align: center;
+    }
+
+    .contribute {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .contribute h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .contribute p {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      margin-bottom: 1rem;
+    }
+
+    .github-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
+      padding: 0.6rem 1.2rem;
+      border: 1px solid var(--accent);
+      border-radius: 0.5rem;
+      transition: background 0.2s ease, color 0.2s ease;
+    }
+
+    .github-link:hover {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .github-link svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    .copyright {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    @media (min-width: 640px) {
+      .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo">wbtl<span>.app</span></div>
+    <p class="tagline">A collection of useful tools that run entirely in your browser. No server needed, no tracking.</p>
+    <div class="badges">
+      <span class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        100% Local
+      </span>
+      <span class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        No Tracking
+      </span>
+      <span class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+        Free Forever
+      </span>
+    </div>
+  </header>
+
+  <main>
+    <h2>Tools</h2>
+    <div class="tools-grid">
+
+      <!-- Tool: Timer -->
+      <a href="https://timer.wbtl.app" class="tool-card">
+        <div class="tool-header">
+          <div class="tool-icon timer">&#9201;</div>
+          <div>
+            <div class="tool-name">Timer</div>
+            <div class="tool-url">timer.wbtl.app</div>
+          </div>
+        </div>
+        <p class="tool-description">Countdown timer with various options to customize it to your liking. Set duration, alerts, and more.</p>
+      </a>
+
+      <!-- Tool: Soundcheck -->
+      <a href="https://soundcheck.wbtl.app" class="tool-card">
+        <div class="tool-header">
+          <div class="tool-icon soundcheck">&#127911;</div>
+          <div>
+            <div class="tool-name">Soundcheck</div>
+            <div class="tool-url">soundcheck.wbtl.app</div>
+          </div>
+        </div>
+        <p class="tool-description">Test your audio output and microphone. Check loudness levels and select input devices to ensure everything works.</p>
+      </a>
+
+      <!-- Add more tools here by copying a tool-card block -->
+
+    </div>
+  </main>
+
+  <footer>
+    <div class="contribute">
+      <h3>Open Source</h3>
+      <p>Want a new tool or have an improvement? Request features or contribute directly on GitHub.</p>
+      <a href="https://github.com/wbtl-app/wbtl-app" class="github-link">
+        <svg viewBox="0 0 24 24"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+    </div>
+    <p class="copyright">wbtl.app</p>
+  </footer>
+</body>
+</html>
