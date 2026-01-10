@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>wbtl.app - Useful Tools That Run Locally</title>
+  <title>wbtl.app - Useful Web Tools</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='6' fill='%230071e3'/><path d='M22 10l-3 3 2 2 3-3a5 5 0 01-6.5 6.5l-5.5 5.5a2 2 0 01-3-3l5.5-5.5A5 5 0 0122 10z' fill='white'/></svg>">
   <style>
     :root {
       --bg: #ffffff;
@@ -227,6 +228,15 @@
       color: var(--text-secondary);
     }
 
+    .copyright a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .copyright a:hover {
+      text-decoration: underline;
+    }
+
     @media (min-width: 640px) {
       .tools-grid {
         grid-template-columns: repeat(2, 1fr);
@@ -237,7 +247,7 @@
 <body>
   <header>
     <div class="logo">wbtl<span>.app</span></div>
-    <p class="tagline">A collection of useful tools that run entirely in your browser. No server needed, no tracking.</p>
+    <p class="tagline">A collection of useful tools that run entirely in your browser. No server needed, no tracking, no ads.</p>
     <div class="badges">
       <span class="badge">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -261,7 +271,7 @@
       <!-- Tool: Timer -->
       <a href="https://timer.wbtl.app" class="tool-card">
         <div class="tool-header">
-          <div class="tool-icon timer">&#9201;</div>
+          <div class="tool-icon timer"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2"/><path d="M9 2h6"/><path d="M12 2v2"/></svg></div>
           <div>
             <div class="tool-name">Timer</div>
             <div class="tool-url">timer.wbtl.app</div>
@@ -273,7 +283,7 @@
       <!-- Tool: Soundcheck -->
       <a href="https://soundcheck.wbtl.app" class="tool-card">
         <div class="tool-header">
-          <div class="tool-icon soundcheck">&#127911;</div>
+          <div class="tool-icon soundcheck"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"/><path d="M15.54 8.46a5 5 0 0 1 0 7.07"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14"/></svg></div>
           <div>
             <div class="tool-name">Soundcheck</div>
             <div class="tool-url">soundcheck.wbtl.app</div>
@@ -296,7 +306,7 @@
         View on GitHub
       </a>
     </div>
-    <p class="copyright">wbtl.app</p>
+    <p class="copyright">Made with <span title="love">❤️</span> in <span title="Switzerland" style="display:inline-block;vertical-align:-0.1em;margin:0 0.25em;line-height:0;"><svg width="14" height="14" viewBox="0 0 32 32" preserveAspectRatio="xMidYMid meet" style="display:block;"><rect width="32" height="32" fill="#D52B1E"/><path d="M13 6h6v20h-6zM6 13h20v6H6z" fill="#fff"/></svg></span> by <a href="https://christianriesen.com">humans</a> and some help from <span title="robots">🤖</span></p>
   </footer>
 </body>
 </html>
