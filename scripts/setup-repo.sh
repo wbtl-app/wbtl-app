@@ -6,21 +6,70 @@
 #
 # This script:
 #   1. Validates the tool name (letters, numbers, dashes only)
-#   2. Checks if the repo already exists on GitHub
-#   3. Creates a new repo in the wbtl-app organization
-#   4. Sets up a local folder at ~/projects/wbtl-app/<tool-name>
-#   5. Initializes with a README and pushes initial commit
-#   6. Copies template files locally (NOT committed):
+#   2. Verifies spec files exist (<tool-name>.md and .svg in TOOL_SPECS_DIR)
+#   3. Checks if the repo already exists on GitHub
+#   4. Creates a new repo in the wbtl-app organization
+#   5. Sets up a local folder at PROJECTS_DIR/<tool-name>
+#   6. Initializes with a README and pushes initial commit
+#   7. Copies template files locally (NOT committed):
 #      - template/tool.html
-#      - docs/icon-guidelines.md
-#      - If matching spec exists: experiment/tool-specs/<tool-name>.md and .svg
+#      - <tool-name>.md and <tool-name>.svg from TOOL_SPECS_DIR
+#
+# Required .env variables:
+#   - PROJECTS_DIR: Directory where tool repos are created
+#   - TOOL_SPECS_DIR: Directory containing spec files (.md and .svg)
 
 set -e
 
 # Get the directory where this script lives
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 WBTL_REPO_DIR="$(dirname "$SCRIPT_DIR")"
-PROJECTS_DIR="$HOME/projects/wbtl-app"
+
+# Load environment variables from .env file
+if [ -f "$SCRIPT_DIR/.env" ]; then
+    # Source .env with variable expansion (allows $HOME in values)
+    set -a
+    source "$SCRIPT_DIR/.env"
+    set +a
+else
+    echo -e "\033[0;31m[ERROR]\033[0m .env file not found at $SCRIPT_DIR/.env"
+    echo "Copy .env.example to .env and configure PROJECTS_DIR"
+    exit 1
+fi
+
+# Validate PROJECTS_DIR is set
+if [ -z "$PROJECTS_DIR" ]; then
+    echo -e "\033[0;31m[ERROR]\033[0m PROJECTS_DIR is not set in .env"
+    echo "Add PROJECTS_DIR to your .env file (e.g., PROJECTS_DIR=\"\$HOME/projects/wbtl-app\")"
+    exit 1
+fi
+
+# Expand any variables in PROJECTS_DIR (like $HOME)
+PROJECTS_DIR=$(eval echo "$PROJECTS_DIR")
+
+# Validate PROJECTS_DIR exists
+if [ ! -d "$PROJECTS_DIR" ]; then
+    echo -e "\033[0;31m[ERROR]\033[0m PROJECTS_DIR does not exist: $PROJECTS_DIR"
+    echo "Create the directory or update PROJECTS_DIR in your .env file"
+    exit 1
+fi
+
+# Validate TOOL_SPECS_DIR is set
+if [ -z "$TOOL_SPECS_DIR" ]; then
+    echo -e "\033[0;31m[ERROR]\033[0m TOOL_SPECS_DIR is not set in .env"
+    echo "Add TOOL_SPECS_DIR to your .env file (e.g., TOOL_SPECS_DIR=\"\$HOME/projects/wbtl-app/tool-specs\")"
+    exit 1
+fi
+
+# Expand any variables in TOOL_SPECS_DIR (like $HOME)
+TOOL_SPECS_DIR=$(eval echo "$TOOL_SPECS_DIR")
+
+# Validate TOOL_SPECS_DIR exists
+if [ ! -d "$TOOL_SPECS_DIR" ]; then
+    echo -e "\033[0;31m[ERROR]\033[0m TOOL_SPECS_DIR does not exist: $TOOL_SPECS_DIR"
+    echo "Create the directory or update TOOL_SPECS_DIR in your .env file"
+    exit 1
+fi
 
 # Colors for output
 RED='\033[0;31m'
@@ -61,6 +110,22 @@ if [[ "$TOOL_NAME" =~ -$ ]]; then
 fi
 
 info "Validating tool name: $TOOL_NAME"
+
+# Validate spec files exist before doing anything else
+SPEC_MD="$TOOL_SPECS_DIR/$TOOL_NAME.md"
+SPEC_SVG="$TOOL_SPECS_DIR/$TOOL_NAME.svg"
+
+if [ ! -f "$SPEC_MD" ] || [ ! -f "$SPEC_SVG" ]; then
+    if [ ! -f "$SPEC_MD" ] && [ ! -f "$SPEC_SVG" ]; then
+        error "Spec files not found:\n  - $SPEC_MD\n  - $SPEC_SVG\n\nBoth files are required to create a new tool."
+    elif [ ! -f "$SPEC_MD" ]; then
+        error "Spec file not found: $SPEC_MD\n\nBoth .md and .svg spec files are required."
+    else
+        error "Spec file not found: $SPEC_SVG\n\nBoth .md and .svg spec files are required."
+    fi
+fi
+
+success "Spec files found"
 
 # Check if repo already exists on GitHub
 info "Checking if repo already exists on GitHub..."
@@ -129,21 +194,10 @@ else
     warn "Template not found: $WBTL_REPO_DIR/template/tool.html"
 fi
 
-# Check for matching spec files (exact match required)
-SPEC_MD="$WBTL_REPO_DIR/experiment/tool-specs/$TOOL_NAME.md"
-SPEC_SVG="$WBTL_REPO_DIR/experiment/tool-specs/$TOOL_NAME.svg"
-
-if [ -f "$SPEC_MD" ] && [ -f "$SPEC_SVG" ]; then
-    cp "$SPEC_MD" "$LOCAL_DIR/$TOOL_NAME.md"
-    cp "$SPEC_SVG" "$LOCAL_DIR/$TOOL_NAME.svg"
-    success "Copied spec files: $TOOL_NAME.md and $TOOL_NAME.svg"
-elif [ -f "$SPEC_MD" ]; then
-    warn "Found $TOOL_NAME.md but missing $TOOL_NAME.svg - not copying either"
-elif [ -f "$SPEC_SVG" ]; then
-    warn "Found $TOOL_NAME.svg but missing $TOOL_NAME.md - not copying either"
-else
-    info "No matching spec files found for '$TOOL_NAME' in experiment/tool-specs/"
-fi
+# Copy spec files (already validated at start of script)
+cp "$SPEC_MD" "$LOCAL_DIR/$TOOL_NAME.md"
+cp "$SPEC_SVG" "$LOCAL_DIR/$TOOL_NAME.svg"
+success "Copied spec files: $TOOL_NAME.md and $TOOL_NAME.svg"
 
 echo ""
 success "Tool repository setup complete!"
