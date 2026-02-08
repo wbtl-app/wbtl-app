@@ -136,15 +136,165 @@
 
     main {
       flex: 1;
-      max-width: 1100px;
+      max-width: 1800px;
       margin: 0 auto;
       padding: 3rem 1.5rem;
       width: 100%;
     }
 
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      align-items: center;
+    }
+
+    .filter-box {
+      flex: 1;
+      min-width: 200px;
+      position: relative;
+    }
+
+    .filter-box input {
+      width: 100%;
+      padding: 0.75rem 2.5rem 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+    }
+
+    .filter-box input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .clear-filter {
+      position: absolute;
+      right: 0.5rem;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.5rem;
+      display: none;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .clear-filter:hover {
+      color: var(--text);
+    }
+
+    .clear-filter.visible {
+      display: block;
+    }
+
+    .sort-controls {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+    }
+
+    .sort-controls label {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .sort-controls select {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      background: var(--card-bg);
+      color: var(--text);
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .sort-controls select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
     .tools-grid {
       display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
       gap: 1.5rem;
+    }
+
+    @media (min-width: 1800px) {
+      .tools-grid {
+        grid-template-columns: repeat(5, 1fr);
+      }
+    }
+
+    @media (min-width: 1440px) and (max-width: 1799px) {
+      .tools-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+    }
+
+    @media (min-width: 1024px) and (max-width: 1439px) {
+      .tools-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (min-width: 640px) and (max-width: 1023px) {
+      .tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 639px) {
+      .tools-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .no-results {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      display: none;
+    }
+
+    .no-results.visible {
+      display: block;
+    }
+
+    .no-results h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+
+    .no-results p {
+      color: var(--text-secondary);
+      margin-bottom: 1.5rem;
+    }
+
+    .no-results button {
+      padding: 0.75rem 1.5rem;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .no-results button:hover {
+      background: var(--accent-hover);
     }
 
     .tool-card {
@@ -311,18 +461,6 @@
         transform: translateX(0);
       }
     }
-
-    @media (min-width: 640px) {
-      .tools-grid {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-
-    @media (min-width: 960px) {
-      .tools-grid {
-        grid-template-columns: repeat(3, 1fr);
-      }
-    }
   </style>
 </head>
 <body>
@@ -356,6 +494,26 @@
   </header>
 
   <main>
+    <div class="controls">
+      <div class="filter-box">
+        <input
+          type="text"
+          id="filterInput"
+          placeholder="Search tools..."
+          aria-label="Filter tools">
+        <button class="clear-filter" id="clearFilter" aria-label="Clear filter">×</button>
+      </div>
+      <div class="sort-controls">
+        <label for="sortSelect">Sort by:</label>
+        <select id="sortSelect" aria-label="Sort tools">
+          <option value="name-asc">Name (A-Z)</option>
+          <option value="name-desc">Name (Z-A)</option>
+          <option value="date-asc">Oldest First</option>
+          <option value="date-desc" selected>Newest First</option>
+        </select>
+      </div>
+    </div>
+
     <div class="tools-grid">
 
       <a href="https://timer.wbtl.app" class="tool-card" data-created="2025-12-15">
@@ -732,6 +890,12 @@
         <p class="tool-description">Deobfuscate and beautify JavaScript code for analysis. All processing happens locally.</p>
       </a>
 
+      <div class="no-results" id="noResults">
+        <h3>No matches found</h3>
+        <p>Try a different search term or remove all filters to see all tools.</p>
+        <button onclick="clearAllFilters()">Remove All Filters</button>
+      </div>
+
     </div>
   </main>
 
@@ -800,6 +964,101 @@
         toggleTheme();
       }
     });
+
+    // Filter and Sort functionality
+    const filterInput = document.getElementById('filterInput');
+    const clearFilterBtn = document.getElementById('clearFilter');
+    const sortSelect = document.getElementById('sortSelect');
+    const toolsGrid = document.querySelector('.tools-grid');
+    const noResults = document.getElementById('noResults');
+    const toolCards = Array.from(document.querySelectorAll('.tool-card'));
+
+    function filterAndSort() {
+      const filterText = filterInput.value.toLowerCase().trim();
+      const sortValue = sortSelect.value;
+
+      // Show/hide clear button
+      if (filterText) {
+        clearFilterBtn.classList.add('visible');
+      } else {
+        clearFilterBtn.classList.remove('visible');
+      }
+
+      // Filter cards
+      let visibleCount = 0;
+      toolCards.forEach(card => {
+        const name = card.querySelector('.tool-name').textContent.toLowerCase();
+        const url = card.querySelector('.tool-url').textContent.toLowerCase();
+        const description = card.querySelector('.tool-description').textContent.toLowerCase();
+
+        const matches = !filterText ||
+          name.includes(filterText) ||
+          url.includes(filterText) ||
+          description.includes(filterText);
+
+        if (matches) {
+          card.style.display = 'block';
+          visibleCount++;
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Show/hide no results message
+      if (visibleCount === 0) {
+        noResults.classList.add('visible');
+      } else {
+        noResults.classList.remove('visible');
+      }
+
+      // Sort cards
+      const sortedCards = [...toolCards].sort((a, b) => {
+        switch (sortValue) {
+          case 'name-asc':
+            return a.querySelector('.tool-name').textContent.localeCompare(
+              b.querySelector('.tool-name').textContent
+            );
+          case 'name-desc':
+            return b.querySelector('.tool-name').textContent.localeCompare(
+              a.querySelector('.tool-name').textContent
+            );
+          case 'date-asc':
+            return new Date(a.getAttribute('data-created')) -
+                   new Date(b.getAttribute('data-created'));
+          case 'date-desc':
+            return new Date(b.getAttribute('data-created')) -
+                   new Date(a.getAttribute('data-created'));
+          default:
+            return 0;
+        }
+      });
+
+      // Reorder DOM elements
+      sortedCards.forEach(card => {
+        toolsGrid.appendChild(card);
+      });
+
+      // Keep no results at the end
+      toolsGrid.appendChild(noResults);
+    }
+
+    function clearAllFilters() {
+      filterInput.value = '';
+      sortSelect.value = 'date-desc';
+      filterAndSort();
+    }
+
+    // Event listeners
+    filterInput.addEventListener('input', filterAndSort);
+    clearFilterBtn.addEventListener('click', () => {
+      filterInput.value = '';
+      filterAndSort();
+      filterInput.focus();
+    });
+    sortSelect.addEventListener('change', filterAndSort);
+
+    // Initialize on page load
+    filterAndSort();
   </script>
 </body>
 </html>
