@@ -1,2 +1,5 @@
 # Script credentials
 scripts/.env
+
+# Claude Code settings
+.claude/settings.local.json
