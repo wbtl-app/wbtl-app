@@ -2,4 +2,4 @@
 scripts/.env
 
 # Claude Code settings
-.claude/settings.local.json
+.claude/
